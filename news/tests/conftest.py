@@ -3,6 +3,7 @@ from django.test.client import Client
 from news.models import Comment, News
 from django.conf import settings
 from datetime import datetime, timedelta
+from django.utils import timezone
 
 
 @pytest.fixture
@@ -65,3 +66,15 @@ def comment(news, author):
 @pytest.fixture
 def comment_id(comment):
     return (comment.id,)
+
+
+@pytest.fixture
+def comments(news, author):
+    for index in range(10):
+        comment = Comment.objects.create(
+            news=news,
+            author=author,
+            text='Test Comment'
+        )
+        comment.created = timezone.now() + timedelta(days=index)
+        comment.save()
