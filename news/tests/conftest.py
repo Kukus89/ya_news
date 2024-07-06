@@ -5,6 +5,8 @@ from django.conf import settings
 from datetime import datetime, timedelta
 from django.utils import timezone
 
+COMMENT_TEXT = "Test comment"
+
 
 @pytest.fixture
 def author(django_user_model):
@@ -59,7 +61,7 @@ def comment(news, author):
     return Comment.objects.create(
         news=news,
         author=author,
-        text='Test Comment'
+        text=COMMENT_TEXT
     )
 
 
@@ -74,7 +76,14 @@ def comments(news, author):
         comment = Comment.objects.create(
             news=news,
             author=author,
-            text='Test Comment'
+            text=COMMENT_TEXT
         )
         comment.created = timezone.now() + timedelta(days=index)
         comment.save()
+
+
+@pytest.fixture
+def form_data(news):
+    return {
+        'text': 'Test comment new'
+    }
