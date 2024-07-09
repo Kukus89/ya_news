@@ -1,9 +1,11 @@
+from http import HTTPStatus
+
 import pytest
 from django.urls import reverse
-from http import HTTPStatus
-from pytest_django.asserts import assertRedirects, assertFormError
-from news.models import Comment
+from pytest_django.asserts import assertFormError, assertRedirects
+
 from news.forms import BAD_WORDS, WARNING
+from news.models import Comment
 from news.tests.conftest import COMMENT_TEXT
 
 
@@ -19,7 +21,7 @@ def test_anonymous_user_cant_create_comment(client, news, form_data):
 def test_user_can_create_comment(author_client, news, form_data):
     url = reverse("news:detail", args=(news.id,))
     response = author_client.post(url, data=form_data)
-    assertRedirects(response, f'{url}#comments')
+    assertRedirects(response, f"{url}#comments")
     comment_count = Comment.objects.all().count()
     comment = Comment.objects.get()
 
@@ -31,7 +33,7 @@ def test_user_can_create_comment(author_client, news, form_data):
 
 def test_user_cant_use_bad_words(author_client, news, form_data):
     url = reverse("news:detail", args=(news.id,))
-    response = author_client.post(url, data={'text': BAD_WORDS[0]})
+    response = author_client.post(url, data={"text": BAD_WORDS[0]})
     comment_count = Comment.objects.all().count()
     assert comment_count == 0
     assertFormError(response, form="form", field="text", errors=WARNING)
@@ -49,10 +51,7 @@ def test_author_can_delete_comment(comment, author_client):
 
 
 @pytest.mark.django_db
-def test_author_cant_delete_another_author_comment(
-        comment,
-        not_author_client
-):
+def test_author_cant_delete_another_author_comment(comment, not_author_client):
     delete_url = reverse("news:delete", args=(comment.id,))
     response = not_author_client.delete(delete_url)
     assert response.status_code == HTTPStatus.NOT_FOUND
@@ -73,9 +72,7 @@ def test_author_can_edit_comment(comment, author_client, form_data):
 
 @pytest.mark.django_db
 def test_author_cant_edit_comment_of_another_author(
-    comment,
-    not_author_client,
-    form_data
+    comment, not_author_client, form_data
 ):
     edit_url = reverse("news:edit", args=(comment.id,))
     response = not_author_client.post(edit_url, data=form_data)

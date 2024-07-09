@@ -1,5 +1,6 @@
-from django.urls import reverse
 import pytest
+from django.urls import reverse
+
 from news.forms import CommentForm
 
 
@@ -7,7 +8,7 @@ from news.forms import CommentForm
 def test_news_count(news_custom_date, client):
     url = reverse("news:home")
     response = client.get(url)
-    object_list = response.context['object_list']
+    object_list = response.context["object_list"]
     news_count = object_list.count()
     assert news_count == 10
 
@@ -16,7 +17,7 @@ def test_news_count(news_custom_date, client):
 def test_news_order(news_custom_date, client):
     url = reverse("news:home")
     response = client.get(url)
-    object_list = response.context['object_list']
+    object_list = response.context["object_list"]
     all_dates = [news.date for news in object_list]
     sorted_dates = sorted(all_dates, reverse=True)
     assert sorted_dates == all_dates
